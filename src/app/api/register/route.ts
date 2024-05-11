@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
-import { LoginSchema } from "@/validations";
+import { RegisterSchema } from "@/validations";
 
 export const POST = async (req: Request) => {
   const data = await req.json();
-  const result = LoginSchema.safeParse(data);
+  const result = RegisterSchema.safeParse(data);
 
   if (!result.success) {
     return NextResponse.json(
