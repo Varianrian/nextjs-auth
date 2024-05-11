@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { RegisterSchema } from "@/validations";
+import { db } from "@/lib/db";
 
 export const POST = async (req: Request) => {
   const data = await req.json();
