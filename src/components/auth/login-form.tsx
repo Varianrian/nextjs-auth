@@ -19,11 +19,15 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-success";
 import axios from "axios";
 import { useTransition, useState } from "react";
+import { useRouter } from "next/navigation";
+import { DEFAULT_REDIRECT_URL } from "@/route";
+import { login } from "@/actions/login";
 
 export const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof LoginSchema>>({
     resolver: zodResolver(LoginSchema),
@@ -43,6 +47,7 @@ export const LoginForm = () => {
         .then(
           (response) => {
             setSuccess(response.data.success);
+            router.push(DEFAULT_REDIRECT_URL);
           },
           (error) => {
             setError(error.response.data.error);
@@ -51,6 +56,13 @@ export const LoginForm = () => {
         .catch((error) => {
           setError(error.response.data.error);
         });
+      // login(values) // This is the same as the axios call above (just a different way to do it/server action)
+      //   .then((data) => {
+      //     setError(data?.error);
+      //   })
+      //   .catch((data) => {
+      //     setSuccess(data.success);
+      //   });
     });
   };
 

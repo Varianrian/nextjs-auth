@@ -1,5 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { LoginSchema } from "@/validations";
+import { signIn } from "@/auth";
+import { AuthError } from "next-auth";
 
 export const POST = async (req: Request) => {
   const data = await req.json();
@@ -12,5 +14,30 @@ export const POST = async (req: Request) => {
     );
   }
 
-  return NextResponse.json({ success: "Data is valid" });
+  const { email, password } = result.data;
+
+  try {
+    const response = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+    return NextResponse.json({ success: "User Logged In", user: response }, { status: 200 });
+  } catch (e: any) {
+    if (e instanceof AuthError) {
+      switch (e.type) {
+        case "CredentialsSignin":
+          return NextResponse.json(
+            { error: "Invalid credentials" },
+            { status: 401 },
+          );
+        default:
+          return NextResponse.json(
+            { error: "Something went wrong" },
+            { status: 400 },
+          );
+      }
+    }
+    throw e;
+  }
 };
